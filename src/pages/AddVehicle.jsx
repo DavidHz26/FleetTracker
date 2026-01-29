@@ -8,19 +8,23 @@ import ModalContainer from "../components/ModalContainer";
 
 export default function AddVehicle() {
     
-    const [plate, setPlate] = useState("");
-    const [brand, setBrand] = useState("");
-    const [model, setModel] = useState("");
-    const [year, setYear] = useState("");
-    const [status, setStatus] = useState("");
-    const [lastServiceDate, setLastServiceDate] = useState("");
-    const [kilometer, setKilometer] = useState("");
-    const [gpsStatus, setGpsStatus] = useState("");
-    const [location, setLocation] = useState("");
+    const [vehicle, setVehicle] = useState({
+        plate: "",
+        brand: "",
+        model: "",
+        year: "",
+        status: "",
+        lastServiceDate: "",
+        kilometer: "",
+        gpsStatus: "",
+        location: ""
+    });
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success"
+    });
 
     const status_options = [
         "Available",
@@ -35,18 +39,22 @@ export default function AddVehicle() {
     ]
 
     const resetForm = () => {
-        setPlate("");
-        setBrand("");
-        setModel("");
-        setYear("");
-        setStatus("");
-        setLastServiceDate("");
-        setKilometer("");
-        setGpsStatus("");
-        setLocation("");
-    }
+        setVehicle({
+            plate: "",
+            brand: "",
+            model: "",
+            year: "",
+            status: "",
+            lastServiceDate: "",
+            kilometer: "",
+            gpsStatus: "",
+            location: ""
+        });
+    };
 
     const validate = () => {
+        const { plate, brand, model, year, status, lastServiceDate, kilometer, gpsStatus, location } = vehicle;
+
         if (!plate.trim()) {
             sendMessage("Plate is required");
             return false;
@@ -97,17 +105,15 @@ export default function AddVehicle() {
     };
 
     const sendMessage = (message, type = "error") => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(type);
-        setSnackbarOpen(true);
-    }
+        setSnackbar({ open: true, message, severity: type });
+    };
 
     const submit = () => {
         if(!validate()){
             return;
         }
 
-        const newVehicle = { plate, brand, model, year: Number(year), status, lastServiceDate, kilometer, gpsStatus, location };
+        const newVehicle = { ...vehicle, year: Number(vehicle.year) };
 
         axios
         .post("http://localhost:3001/vehicles", newVehicle)
@@ -121,11 +127,17 @@ export default function AddVehicle() {
         });
     }
 
+    const handleChange = (field, value) => {
+        const updatedVehicle = { ...vehicle };
+        updatedVehicle[field] = value;
+        setVehicle(updatedVehicle);
+    }
+
     const handleSnackbarClose = (event, reason) => {
         if (reason === "clickaway"){
             return;
         }
-        setSnackbarOpen(false);
+        setSnackbar(prev => ({ ...prev, open: false }));
     }
 
     return (
@@ -140,58 +152,58 @@ export default function AddVehicle() {
 
                 <FormField
                     label="Plate"
-                    value={plate}
-                    onChange={e => setPlate(e.target.value)}
+                    value={vehicle.plate}
+                    onChange={e => handleChange("plate", e.target.value)}
                 />
 
                 <FormField 
                     label="Brand"
-                    value={brand}
-                    onChange={e => setBrand(e.target.value)}
+                    value={vehicle.brand}
+                    onChange={e => handleChange("brand", e.target.value)}
                 />
 
                 <FormField
                     label="Model"
-                    value={model}
-                    onChange={e => setModel(e.target.value)}
+                    value={vehicle.model}
+                    onChange={e => handleChange("model", e.target.value)}
                 />
 
                 <FormField
                     label="Year"
-                    value={year}
-                    onChange={e => setYear(e.target.value)}
+                    value={vehicle.year}
+                    onChange={e => handleChange("year", e.target.value)}
                 />
 
                 <FormSelect
                     label="Status"
-                    value={status}
-                    onChange={setStatus}
+                    value={vehicle.status}
+                    onChange={val => handleChange("status", val)}
                     options={status_options}
                 />
 
                 <FormField
                     label="Last Service Date"
-                    value={lastServiceDate}
-                    onChange={e => setLastServiceDate(e.target.value)}
+                    value={vehicle.lastServiceDate}
+                    onChange={e => handleChange("lastServiceDate", e.target.value)}
                 />
 
                 <FormField
                     label="Kilometer"
-                    value={kilometer}
-                    onChange={e => setKilometer(e.target.value)}
+                    value={vehicle.kilometer}
+                    onChange={e => handleChange("kilometer", e.target.value)}
                 />
 
                 <FormSelect
                     label="GPS Status"
-                    value={gpsStatus}
-                    onChange={setGpsStatus}
+                    value={vehicle.gpsStatus}
+                    onChange={val => handleChange("gpsStatus", val)}
                     options={gps_status_options}
                 />
 
                 <FormField
                     label="Location"
-                    value={location}
-                    onChange={e => setLocation(e.target.value)}
+                    value={vehicle.location}
+                    onChange={e => handleChange("location", e.target.value)}
                 />
 
                 <Button 
@@ -203,7 +215,7 @@ export default function AddVehicle() {
             </Stack>
            
             <Snackbar
-                open={snackbarOpen}
+                open={snackbar.open}
                 autoHideDuration={3000}
                 onClose={handleSnackbarClose}
                 anchorOrigin={{
@@ -213,9 +225,9 @@ export default function AddVehicle() {
             >
                 <Alert
                     onClose={handleSnackbarClose}
-                    severity={snackbarSeverity}
+                    severity={snackbar.severity}
                 >
-                    {snackbarMessage}
+                    {snackbar.message}
                 </Alert>
             </Snackbar>
 
