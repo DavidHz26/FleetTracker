@@ -13,32 +13,22 @@ export default function EditVehicle() {
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [plate, setPlate] = useState("");
-    const [brand, setBrand] = useState("");
-    const [model, setModel] = useState("");
-    const [year, setYear] = useState("");
-    const [status, setStatus] = useState("");
-    const [lastServiceDate, setLastServiceDate] = useState("");
-    const [kilometer, setKilometer] = useState("");
-    const [gpsStatus, setGpsStatus] = useState("");
-    const [location, setLocation] = useState("");
+    const [vehicle, setVehicle] = useState({
+        plate: "",
+        brand: "",
+        model: "",
+        year: "",
+        status: "",
+        lastServiceDate: "",
+        kilometer: "",
+        gpsStatus: "",
+        location: ""
+    });
 
     const fetchVehicleData = () => {
         axios
         .get(`http://localhost:3001/vehicles/${id}`)
-        .then(res => {
-            const { plate, brand, model, year, status, lastServiceDate, kilometer, gpsStatus, location} = res.data;
-
-            setPlate(plate);
-            setBrand(brand);
-            setModel(model);
-            setYear(year);
-            setStatus(status);
-            setLastServiceDate(lastServiceDate);
-            setKilometer(kilometer);
-            setGpsStatus(gpsStatus);
-            setLocation(location);
-        })
+        .then(res => setVehicle(res.data))
         .catch(err => console.error(err));
     }
 
@@ -55,7 +45,7 @@ export default function EditVehicle() {
     ]
 
     const submit = () => {
-        const updatedVehicle = { plate, brand, model, year: Number(year), status, lastServiceDate, kilometer, gpsStatus, location };
+        const updatedVehicle = { ...vehicle, year: Number(vehicle.year) };
 
         axios
         .put(`http://localhost:3001/vehicles/${id}`, updatedVehicle)
@@ -66,6 +56,12 @@ export default function EditVehicle() {
     const cancel = () => {
         navigate(`/vehicles/${id}`)
     }
+
+    const handleChange = (field, value) => {
+        const updatedVehicle = { ...vehicle };
+        updatedVehicle[field] = value;
+        setVehicle(updatedVehicle);
+    };
 
     useEffect(() => {
         fetchVehicleData();
@@ -83,65 +79,65 @@ export default function EditVehicle() {
 
                 <FormField
                     label={"Plate"}
-                    value={plate}
-                    onChange={e => setPlate(e.target.value)}
+                    value={vehicle.plate}
+                    onChange={e => handleChange("plate", e.target.value)}
                     placeholder="00000"
                 />
 
                 <FormField
-                    label={"Brand"}
-                    value={brand}
-                    onChange={e => setBrand(e.target.value)}
+                    label="Brand"
+                    value={vehicle.brand}
+                    onChange={e => handleChange("brand", e.target.value)}
                     placeholder="Mazda"
                 />
 
                 <FormField
-                    label={"Model"}
-                    value={model}
-                    onChange={e => setModel(e.target.value)}
+                    label="Model"
+                    value={vehicle.model}
+                    onChange={e => handleChange("model", e.target.value)}
                     placeholder="M3"
                 />
 
                 <FormField
-                    label={"Year"}
-                    value={year}
-                    onChange={e => setYear(e.target.value)}
+                    label="Year"
+                    value={vehicle.year}
+                    onChange={e => handleChange("year", e.target.value)}
                     placeholder="2015"
                 />
 
                 <FormSelect
-                    label={"Status"}
-                    value={status}
-                    onChange={setStatus}
+                    label="Status"
+                    value={vehicle.status}
+                    onChange={val => handleChange("status", val)}
                     options={status_options}
                 />
 
                 <FormField
-                    label={"Last Service Date"}
-                    value={lastServiceDate}
-                    onChange={e => setLastServiceDate(e.target.value)}
+                    label="Last Service Date"
+                    value={vehicle.lastServiceDate}
+                    onChange={e => handleChange("lastServiceDate", e.target.value)}
                     placeholder="2015-01-15"
                 />
 
                 <FormField
-                    label={"Kilometer"}
-                    value={kilometer}
-                    onChange={e => setKilometer(e.target.value)}
+                    label="Kilometer"
+                    value={vehicle.kilometer}
+                    onChange={e => handleChange("kilometer", e.target.value)}
                     placeholder="2015-01-15"
                 />
 
                 <FormSelect
-                    label={"GPS Status"}
-                    value={gpsStatus}
-                    onChange={setGpsStatus}
+                    label="GPS Status"
+                    value={vehicle.gpsStatus}
+                    onChange={val => handleChange("gpsStatus", val)}
                     options={gps_status_options}
                 />
 
                 <FormField
-                    label={"Location"}
-                    value={location}
-                    onChange={e => setLocation(e.target.value)}
-                    placeholder="2015-01-15"
+                    label="Location"
+                    value={vehicle.location}
+                    onChange={e => handleChange("location", e.target.value)}
+                    placeholder="New York"
                 />
 
                 <Box 
