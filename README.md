@@ -88,13 +88,24 @@ All data is stored in db.json via the mock API.
 
 ## Technical notes and decisions
 
-1. React with Vite was used for its speed, minimal configuration, and fast hot-reload, which allowed focusing more on application logic and UI rather than tooling setup.
-2. Material UI (MUI) was chosen to speed up development, maintain visual consistency, and leverage well-tested and accessible components without having to write custom CSS from scratch.
-3. The application was structured into Pages (main views), Components (reusable UI pieces), Context and Utils to keep the code clean, maintainable, and scalable.
-4. Axios was used for consuming the REST API because of its simplicity and clarity.
-5. Pagination and filtering were implemented using API, allowing the frontend to request only the data it needs. This is more efficient than handling pagination and filtering entirely on the client side.
-6. Vehicles are displayed as cards in a grid layout to better utilize screen space and improve readability. Showing only 10 vehicles per page avoids excessive scrolling and keeps the interface clean.
-7. A Back to Home button was added to ensure the user always has a quick way to return to the main screen and avoid getting stuck in secondary views or forms.
-8. The vehicle list refetches data from the API after each CRUD operation. While using global state (Context or Redux) could have enabled local updates without refetching, it was intentionally not used to prevent potential bugs with server-side pagination and data duplication, keeping the implementation simple and maintainable for this small-scope project.
-9. Context was used to share the ability to show messages from anywhere within the code, improving the User Experience.
+### Development Setup
 
+1. **React 18 + Vite** - Choosen for fast setup, excellent developer experience with hot-reload, and optimal build performance, allowing focus con application logic rather than configuration.
+
+### UI & Styling   
+2. **Material UI (MUI)** -  Accelerated development with pre-built, accessible components while ensuring visual consistency and responsive design without extensive custom CSS.
+
+### Project Structure
+3. **Modular Architecture** - Organized into `Pages` (route-level views), `Components` (reusable UI), `Context` (global state), and `Utils` (helpers) for clean separation of concerns and maintanability.
+
+### API Integration
+4. **Axios + JSON-Server** -  Used Axios for clean API calls and JSON-Server to simulate RESTful backend with full CRUD, pagination and filtering capabilities.
+5. **API-Driven Pagination/Filtering** - Implemented using JSON-Server's query parameters (`_page`, `_limit`, `q`) to practice real-world patterns where the frontend requests only needed data, avoiding client-side processiong of large data.
+
+### UI/UX Considerations
+6. **Card-Based Grid Layout** - Vehicles displayed in responsive cards for optimal space usage and readability, with 10 items per page to balance information density and scrolling.
+7. **Persistent Navigation** - "Back to Home" button ensures users always have cleaner exit points from forms or details views, improving navigation flow.
+
+### State Management Strategy
+8. **API as Source of Truth** - Vehicle data refetches after CRUD operations to maintain synchronnization. Avoided global state (Context/Redux) for lists to prevent inconsistencies with paginated API response, keeping implementation simple and robust.
+9. **Targeted Context Usage** - React Context exclusively manages global UI state (Snackbar notificacions/alerts), demonstrating appropiate tool selection for specific problems.
