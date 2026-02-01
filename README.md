@@ -90,9 +90,11 @@ All data is stored in db.json via the mock API.
 
 1. React with Vite was used for its speed, minimal configuration, and fast hot-reload, which allowed focusing more on application logic and UI rather than tooling setup.
 2. Material UI (MUI) was chosen to speed up development, maintain visual consistency, and leverage well-tested and accessible components without having to write custom CSS from scratch.
-3. The application was structured into Pages (main views) and Components (reusable UI pieces) to keep the code clean, maintainable, and scalable.
+3. The application was structured into Pages (main views), Components (reusable UI pieces), Context and Utils to keep the code clean, maintainable, and scalable.
 4. Axios was used for consuming the REST API because of its simplicity and clarity.
-5. Pagination and filtering were implemented using query parameters, allowing the frontend to request only the data it needs. This is more efficient than handling pagination and filtering entirely on the client side.
+5. Pagination and filtering were implemented using API, allowing the frontend to request only the data it needs. This is more efficient than handling pagination and filtering entirely on the client side.
 6. Vehicles are displayed as cards in a grid layout to better utilize screen space and improve readability. Showing only 10 vehicles per page avoids excessive scrolling and keeps the interface clean.
 7. A Back to Home button was added to ensure the user always has a quick way to return to the main screen and avoid getting stuck in secondary views or forms.
-8. Redux, Context, useMemo, and useCallback were not used because the application does not have complex global state or expensive computations. This keeps the code simpler and easier to understand without sacrificing functionality.
+8. The vehicle list refetches data from the API after each CRUD operation. While using global state (Context or Redux) could have enabled local updates without refetching, it was intentionally not used to prevent potential bugs with server-side pagination and data duplication, keeping the implementation simple and maintainable for this small-scope project.
+9. Context was used to share the ability to show messages from anywhere within the code, improving the User Experience.
+
