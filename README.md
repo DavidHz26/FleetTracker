@@ -43,13 +43,17 @@ npm install -g json-server
 json-server --watch db.json --port 3001
 ```
 
-# API will be available at: http://localhost:3001
+# API will be available at: 
+
+http://localhost:3001
 
 4. Start the React development server
 ```
 npm run dev
 ```
-# App will be open at: http://localhost:5173
+# App will be open at: 
+
+http://localhost:5173
 
 ## Technical Decisions & Architecture
 
