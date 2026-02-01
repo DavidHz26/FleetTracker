@@ -1,13 +1,18 @@
-import { Stack, Button, Typography, Snackbar, Alert } from "@mui/material";
+import { Stack, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import FormField from "../components/FormField";
 import FormSelect from "../components/FormSelect";
 import axios from "axios";
 import HomeButton from "../components/HomeButton";
 import ModalContainer from "../components/ModalContainer";
+import { GPS_STATUS, VEHICLE_STATUS } from "../utils/constants";
+import { validateVehicle } from "../utils/validation";
+import { useMessages } from "../context/MessagesContext";
 
 export default function AddVehicle() {
     
+    const { showMessage } = useMessages();
+
     const [vehicle, setVehicle] = useState({
         plate: "",
         brand: "",
@@ -19,24 +24,6 @@ export default function AddVehicle() {
         gpsStatus: "",
         location: ""
     });
-
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        message: "",
-        severity: "success"
-    });
-
-    const status_options = [
-        "Available",
-        "Unavailable",
-        "Repair"
-    ]
-
-    const gps_status_options = [
-        "Tracked",
-        "Untracked",
-        "Maintenance"
-    ]
 
     const resetForm = () => {
         setVehicle({
@@ -52,64 +39,11 @@ export default function AddVehicle() {
         });
     };
 
-    const validate = () => {
-        const { plate, brand, model, year, status, lastServiceDate, kilometer, gpsStatus, location } = vehicle;
-
-        if (!plate.trim()) {
-            sendMessage("Plate is required");
-            return false;
-        }
-
-        if (!brand.trim()) {
-            sendMessage("Brand is required");
-            return false;
-        }
-
-        if (!model.trim()) {
-            sendMessage("Model is required");
-            return false;
-        }
-
-        if (!year || isNaN(year)) {
-            sendMessage("Year must be a number");
-            return false;
-        }
-
-        if (!status) {
-            sendMessage("Status is required");
-            return false;
-        }
-
-        if (!lastServiceDate || isNaN(Date.parse(lastServiceDate))) {
-            sendMessage("Last service date is invalid");
-            return false;
-        }
-
-        const km = Number(kilometer);
-        if (!kilometer || isNaN(km) || km < 0) {
-            sendMessage("Kilometer must be a valid positive number");
-            return false;
-        }
-
-        if (!gpsStatus) {
-            sendMessage("GPS status is required");
-            return false;
-        }
-
-        if (!location.trim()) {
-            sendMessage("Location is required");
-            return false;
-        }
-
-        return true;
-    };
-
-    const sendMessage = (message, type = "error") => {
-        setSnackbar({ open: true, message, severity: type });
-    };
 
     const submit = () => {
-        if(!validate()){
+        const result = validateVehicle(vehicle);
+        if(!result.valid){
+            showMessage(result.message);
             return;
         }
 
@@ -119,25 +53,16 @@ export default function AddVehicle() {
         .post("http://localhost:3001/vehicles", newVehicle)
         .then(res => {
             resetForm();
-            sendMessage("Successfully added!", "success");
+            showMessage("Successfully added!", "success");
         })
         .catch(err => {
             console.error(err);
-            sendMessage("Failed to create new vehicle!");
+            showMessage("Failed to add vehicle!");
         });
     }
 
     const handleChange = (field, value) => {
-        const updatedVehicle = { ...vehicle };
-        updatedVehicle[field] = value;
-        setVehicle(updatedVehicle);
-    }
-
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === "clickaway"){
-            return;
-        }
-        setSnackbar(prev => ({ ...prev, open: false }));
+        setVehicle(prev => ({...prev, [field]: value}));
     }
 
     return (
@@ -178,7 +103,7 @@ export default function AddVehicle() {
                     label="Status"
                     value={vehicle.status}
                     onChange={val => handleChange("status", val)}
-                    options={status_options}
+                    options={VEHICLE_STATUS}
                 />
 
                 <FormField
@@ -197,7 +122,7 @@ export default function AddVehicle() {
                     label="GPS Status"
                     value={vehicle.gpsStatus}
                     onChange={val => handleChange("gpsStatus", val)}
-                    options={gps_status_options}
+                    options={GPS_STATUS}
                 />
 
                 <FormField
@@ -213,23 +138,6 @@ export default function AddVehicle() {
                     Create
                 </Button>
             </Stack>
-           
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={3000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "center"
-                }}
-            >
-                <Alert
-                    onClose={handleSnackbarClose}
-                    severity={snackbar.severity}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
 
             <HomeButton/>
         </ModalContainer>

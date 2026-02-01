@@ -1,18 +1,6 @@
 {
   "vehicles": [
     {
-      "plate": "175GF",
-      "brand": "Mazda",
-      "model": "M3",
-      "year": 2017,
-      "status": "Available",
-      "lastServiceDate": "2025-12-01",
-      "kilometer": 52000,
-      "gpsStatus": "Tracked",
-      "location": "New York",
-      "id": 1
-    },
-    {
       "plate": "A123BC",
       "brand": "Toyota",
       "model": "Corolla",
@@ -191,6 +179,30 @@
       "gpsStatus": "Maintenance",
       "location": "Philadelphia",
       "id": 16
+    },
+    {
+      "plate": "JXK917",
+      "brand": "Toyota",
+      "model": "Corolla",
+      "year": 2021,
+      "status": "Available",
+      "lastServiceDate": "2025-09-20",
+      "kilometer": "38500",
+      "gpsStatus": "Tracked",
+      "location": "San Diego",
+      "id": 17
+    },
+    {
+      "plate": "D321GH",
+      "brand": "Ford",
+      "model": "Mustang",
+      "year": 2020,
+      "status": "Available",
+      "lastServiceDate": "2025-12-05",
+      "kilometer": "35000",
+      "gpsStatus": "Tracked",
+      "location": "Miami",
+      "id": 18
     }
   ]
 }
