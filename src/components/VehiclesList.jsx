@@ -3,8 +3,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import VehicleFilter from "./VehicleFilter";
+import { useMessages } from "../context/MessagesContext";
 
 export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage}) {
+
+    const { showMessage } = useMessages();
 
     const [vehicles, setVehicles] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -12,6 +15,8 @@ export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage
     const [searchText, setSearchText] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const statusOptions = ["All", "Available", "Unavailable", "Repair"];
+
+    const queryKey = `${searchText}-${statusFilter}-${currentPage}-${itemsPerPage}`;
 
     const fetchVehiclesData = () => {
         let url = `http://localhost:3001/vehicles?_page=${currentPage}&_limit=${itemsPerPage}`;
@@ -31,13 +36,18 @@ export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage
 
             const totalCount = Number(res.headers["x-total-count"]);
             setTotalPages(Math.ceil(totalCount / itemsPerPage));
+
+            showMessage("Vehicles successfully retrieved!", "success");
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            showMessage("Failed to retrieve vehicles!")
+        });
     }
 
     useEffect(() => {
         fetchVehiclesData();
-    }, [currentPage, itemsPerPage, searchText, statusFilter]);
+    }, [queryKey]);
 
     useEffect(() => {
         setCurrentPage(1);

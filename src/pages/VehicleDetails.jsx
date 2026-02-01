@@ -5,18 +5,26 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HomeButton  from "../components/HomeButton"
 import ModalContainer from "../components/ModalContainer";
+import { useMessages } from "../context/MessagesContext";
 
 export default function VehicleDetails () {
 
     const {id} = useParams();
     const [vehicle, setVehicle] = useState(null);
     const navigate = useNavigate();
+    const { showMessage } = useMessages();
 
     const fetchVehicleData = () => {
         axios
         .get(`http://localhost:3001/vehicles/${id}`)
-        .then(res => setVehicle(res.data))
-        .catch(err => console.error(err));
+        .then(res =>    {
+            setVehicle(res.data);
+            showMessage("Data successfully retrieved!", "success");
+        })
+        .catch(err => {
+            console.error(err);
+            showMessage("Failed to get vehicle data!");
+        });
     }
 
     useEffect(() => {
@@ -36,8 +44,11 @@ export default function VehicleDetails () {
     const handleDelete = () => {
         axios
         .delete(`http://localhost:3001/vehicles/${id}`)
-        .then(() => window.location.href = "/")
-        .catch(err => console.error(err));
+        .then(() => navigate("/"))
+        .catch(err => {
+            console.error(err);
+            showMessage("Failed to delete vehicle!")
+        });
     }
 
     return (

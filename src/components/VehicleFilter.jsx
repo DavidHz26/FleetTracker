@@ -1,22 +1,25 @@
 import { Box, Stack } from "@mui/material";
 import FormField from "./FormField";
 import FormSelect from "./FormSelect";
+import { useTransition } from "react";
 
 export default function VehicleFilter({label, options, searchText, setSearchText, statusFilter, setStatusFilter}) {
 
+    const [isPending, startTransition] = useTransition();
+
     return (
         <Box
-        sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-        }}
+            sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+            }}
         >
             <Box
-            sx={{
-                width: 520,
-                maxWidth: "90vw",
-            }}
+                sx={{
+                    width: 520,
+                    maxWidth: "90vw",
+                }}
             >
                 <Stack
                     direction="row"
@@ -32,7 +35,12 @@ export default function VehicleFilter({label, options, searchText, setSearchText
                     <FormField
                         label={label}
                         value={searchText}
-                        onChange={e => setSearchText(e.target.value)}
+                        onChange={e => {
+                            const value = e.target.value;
+                            startTransition(() => {
+                                setSearchText(value);
+                            })
+                        }}
                         placeholder="Enter text..."
                         sx={{ flex: 1 }}
                     />

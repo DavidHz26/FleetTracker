@@ -2,6 +2,8 @@ import { FormControl, Typography, Select, MenuItem, Stack } from "@mui/material"
 
 export default function FormSelect({ label, value, onChange, options }) {
   
+    const optionValues = Object.values(options);
+
     return (
         <Stack spacing={1}>
             <FormControl
@@ -25,7 +27,7 @@ export default function FormSelect({ label, value, onChange, options }) {
                         },
                     }}
                 >
-                    {options.map(option => (
+                    {optionValues.map(option => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>

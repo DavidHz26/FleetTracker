@@ -26,7 +26,6 @@ export default function Vehicles() {
             <Box
                 sx={{
                     padding: 4,
-                    borderBottom: "1px solid #ddd",
                     flexShrink: 0,
                     zIndex: 1,
                 }}
