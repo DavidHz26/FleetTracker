@@ -1,90 +1,48 @@
-import { Box, Typography, Card, CardContent, Button } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { Box, Button, Card, CardContent, Typography, Pagination, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 import VehicleFilter from "./VehicleFilter";
-import { useMessages } from "../context/MessagesContext";
+import { FILTER_OPTIONS } from "../utils/constants";
 
-export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage}) {
+export const VehiclesList = ({ vehicles, searchText, setSearchText, statusFilter, setStatusFilter, currentPage, setCurrentPage, totalPages }) => {
 
-    const { showMessage } = useMessages();
-
-    const [vehicles, setVehicles] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);
-
-    const [searchText, setSearchText] = useState("");
-    const [statusFilter, setStatusFilter] = useState("All");
-    const statusOptions = ["All", "Available", "Unavailable", "Repair"];
-
-    const queryKey = `${searchText}-${statusFilter}-${currentPage}-${itemsPerPage}`;
-
-    const fetchVehiclesData = () => {
-        let url = `http://localhost:3001/vehicles?_page=${currentPage}&_limit=${itemsPerPage}`;
-
-        if(searchText){
-            url += `&q=${encodeURIComponent(searchText)}`;
-        }
-
-        if(statusFilter && statusFilter != "All"){
-            url += `&status=${encodeURIComponent(statusFilter)}`;
-        }
-
-        axios
-        .get(url)
-        .then(res => {
-            setVehicles(res.data);
-
-            const totalCount = Number(res.headers["x-total-count"]);
-            setTotalPages(Math.ceil(totalCount / itemsPerPage));
-
-            showMessage("Vehicles successfully retrieved!", "success");
-        })
-        .catch(err => {
-            console.error(err);
-            showMessage("Failed to retrieve vehicles!")
-        });
+    const handlePageChange = (event, page) => {
+        setCurrentPage(page);
     }
-
-    useEffect(() => {
-        fetchVehiclesData();
-    }, [queryKey]);
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchText, statusFilter]);
 
     return (
         <Box
             sx={{
                 maxWidth: 1200,
                 width: "100%",
-                mx: "auto"
+                mx: "auto",
+                p: 2
             }}
-        >
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-                <VehicleFilter
-                    label={"Search by plate, brand or model"}
-                    options={statusOptions}
-                    searchText={searchText}
-                    setSearchText={setSearchText}
-                    statusFilter={statusFilter}
-                    setStatusFilter={setStatusFilter}
-                />
-            </Box>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 3,
-                }}
-            >
-                {vehicles.map(vehicle => (
-                    <Box
+        >           
+            <VehicleFilter
+                label={"Search"}
+                options={FILTER_OPTIONS}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+            />
+         
+            <Grid container spacing={3}>
+                {vehicles?.length > 0 ? (
+                    vehicles.map(vehicle => (
+                    <Grid item
                         key={vehicle.id}
                         sx={{
-                            width: "18%",
-                            minWidth: 220,
+                            flexBasis: {
+                                xs: '100%',
+                                sm: '50%',
+                                md: '22%' 
+                            },
+                            maxWidth: {
+                                xs: '100%',
+                                sm: '50%',
+                                md: '18%'
+                            },
                             display: "flex"
                         }}
                     >
@@ -92,10 +50,12 @@ export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage
                             sx={{ 
                                 width: "100%",
                                 display: "flex",
-                                flexDirection: "column"
+                                flexDirection: "column",
+                                boxShadow: 2
                             }}
                         >
                             <CardContent sx={{ flexGrow: 1 }}>
+
                                 <Typography variant="h6">
                                     {vehicle.brand} {vehicle.model}
                                 </Typography>
@@ -111,6 +71,7 @@ export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage
                                 <Typography>
                                     Status: {vehicle.status}
                                 </Typography>
+
                             </CardContent>
 
                             <Box sx={{ p: 2, pt: 0 }}>
@@ -124,29 +85,29 @@ export default function VehiclesList ({currentPage, itemsPerPage, setCurrentPage
                                 </Button>
                             </Box>
                         </Card>
-                    </Box>
-                ))}
-            </Box>
+                    </Grid>
+                ))
+            ) : (
+                <Grid item xs={12}>
+                    <Typography align="center" sx={{ mt: 4, color: "text.secondary" }}>
+                        No vehicles found matching your search.
+                    </Typography>
+                </Grid>
+            )}
+            </Grid>
 
-
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 1,
-                    mt: 4
-                }}
-            >
-                {[...Array(totalPages)].map((_, i) => (
-                    <Button
-                        key={i}
-                        variant={i + 1 === currentPage ? "contained" : "outlined"}
-                        onClick={() => setCurrentPage(i + 1)}
-                    >
-                        {i + 1}
-                    </Button>
-                ))}
-            </Box>
+            {totalPages > 1 && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={currentPage} 
+                        onChange={handlePageChange} 
+                        color="primary" 
+                        variant="outlined" 
+                        shape="rounded" 
+                    />
+                </Box>
+            )}
         </Box>
     );
 }

@@ -1,46 +1,42 @@
 import { Box, Stack, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import FormField from "../components/FormField";
-import FormSelect from "../components/FormSelect";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import ModalContainer from "../components/ModalContainer";
 import HomeButton from "../components/HomeButton";
 import { validateVehicle } from "../utils/validation";
 import { useMessages } from "../context/MessagesContext";
-import { GPS_STATUS, VEHICLE_STATUS } from "../utils/constants";
+import { useEditVehicle } from "../hooks/useEditVehicle";
+import { useGetVehicle } from "../hooks/useGetVehicle";
+import { LoadingMessage } from "../components/LoadingMessage";
+import VehicleFormFields from "../components/VehicleFormFields";
 
 export default function EditVehicle() {
     
     const {id} = useParams();
     const navigate = useNavigate();
     const { showMessage } = useMessages();
+    const editMutation = useEditVehicle();
+    const { data, isLoading, error } = useGetVehicle(id);
 
-    const [vehicle, setVehicle] = useState({
-        plate: "",
-        brand: "",
-        model: "",
-        year: "",
-        status: "",
-        lastServiceDate: "",
-        kilometer: "",
-        gpsStatus: "",
-        location: ""
-    });
+    const [vehicle, setVehicle] = useState(null);
 
-    const fetchVehicleData = () => {
-        axios
-        .get(`http://localhost:3001/vehicles/${id}`)
-        .then(res => {
-            setVehicle(res.data)
-            showMessage("Data successfully retrieved!", "success");
-        })
-        .catch(err => {
-            console.error(err);
-            showMessage("Failed to get vehicle data!");
-        });
-    }
+    useEffect(() => {
+        if (data && !vehicle) {
+
+            setVehicle({
+                ...data,
+                year: data.year ? String(data.year) : "",
+                kilometer: data.kilometer ? String(data.kilometer) : ""
+            });
+        }
+    }, [data, vehicle]);
+
+    useEffect(() => {
+        if (error) {
+            console.error(error);
+            showMessage("Failed to load vehicle data!");
+        }
+    }, [error, showMessage]);
 
     const submit = () => {
         const result = validateVehicle(vehicle);
@@ -49,28 +45,31 @@ export default function EditVehicle() {
             return;
         }
 
-        const updatedVehicle = { ...vehicle, year: Number(vehicle.year) };
+        const updatedVehicle = {
+            ...vehicle,
+            year: Number(vehicle.year),
+            kilometer: Number(vehicle.kilometer)
+        };
 
-        axios
-        .put(`http://localhost:3001/vehicles/${id}`, updatedVehicle)
-        .then(res => navigate(`/vehicles/${id}`))
-        .catch(err => {
-            console.error(err);
-            showMessage("Failed to update vehicle!")
+        editMutation.mutate({ id, updatedVehicle }, {
+            onSuccess: () => {
+                showMessage("Vehicle updated successfully!", "success");
+                navigate(`/vehicles/${id}`);
+            },
+            onError: (error) => {
+                const errorMessage = error.response?.data?.message || "Failed to update vehicle.";
+                showMessage(errorMessage);
+            }
         });
-    }
-
-    const cancel = () => {
-        navigate(`/vehicles/${id}`)
     }
 
     const handleChange = (field, value) => {
         setVehicle(prev => ({...prev, [field]: value}));
     };
 
-    useEffect(() => {
-        fetchVehicleData();
-    }, [id]);
+    if(isLoading || !vehicle){
+        return <LoadingMessage/>;
+    }
 
     return(
         <ModalContainer>
@@ -82,61 +81,7 @@ export default function EditVehicle() {
                     Edit Vehicle
                 </Typography>
 
-                <FormField
-                    label={"Plate"}
-                    value={vehicle.plate}
-                    onChange={e => handleChange("plate", e.target.value)}
-                />
-
-                <FormField
-                    label="Brand"
-                    value={vehicle.brand}
-                    onChange={e => handleChange("brand", e.target.value)}
-                />
-
-                <FormField
-                    label="Model"
-                    value={vehicle.model}
-                    onChange={e => handleChange("model", e.target.value)}
-                />
-
-                <FormField
-                    label="Year"
-                    value={vehicle.year}
-                    onChange={e => handleChange("year", e.target.value)}
-                />
-
-                <FormSelect
-                    label="Status"
-                    value={vehicle.status}
-                    onChange={val => handleChange("status", val)}
-                    options={VEHICLE_STATUS}
-                />
-
-                <FormField
-                    label="Last Service Date"
-                    value={vehicle.lastServiceDate}
-                    onChange={e => handleChange("lastServiceDate", e.target.value)}
-                />
-
-                <FormField
-                    label="Kilometer"
-                    value={vehicle.kilometer}
-                    onChange={e => handleChange("kilometer", e.target.value)}
-                />
-
-                <FormSelect
-                    label="GPS Status"
-                    value={vehicle.gpsStatus}
-                    onChange={val => handleChange("gpsStatus", val)}
-                    options={GPS_STATUS}
-                />
-
-                <FormField
-                    label="Location"
-                    value={vehicle.location}
-                    onChange={e => handleChange("location", e.target.value)}
-                />
+                <VehicleFormFields vehicle={vehicle} onChange={handleChange}/>
 
                 <Box 
                     sx={{
@@ -149,14 +94,17 @@ export default function EditVehicle() {
                         variant="contained"
                         color="primary"
                         onClick={submit}
+                        disabled={editMutation.isPending}
                     >
-                        Edit
+                        {editMutation.isPending ? "Saving..." : "Edit"}
                     </Button>
 
                     <Button
                         variant="contained"
                         color="error"
-                        onClick={cancel}
+                        component={Link}
+                        to={`/vehicles/${id}`}
+                        disabled={editMutation.isPending}
                     >
                         Cancel
                     </Button>

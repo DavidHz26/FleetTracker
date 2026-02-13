@@ -1,9 +1,10 @@
     export const validateVehicle = (vehicle) => {
         const { plate, brand, model, year, status, lastServiceDate, kilometer, gpsStatus, location } = vehicle;
 
-        if (!plate.trim()) {
+        const plateRegex = /^[A-Z0-9-]+$/i; 
+        if (!plateRegex.test(plate)) {
             return {
-                message: "Plate is required!",
+                message: "Plate must be alphanumeric!",
                 valid: false
             }
         }
@@ -22,9 +23,10 @@
             }
         }
 
-        if (!year || isNaN(year)) {
-           return {
-                message: "Year is required!",
+        const currentYear = new Date().getFullYear();
+        if (!year || isNaN(year) || year < 1900 || year > currentYear + 1) {
+            return {
+                message: `Year must be between 1900 and ${currentYear + 1}!`,
                 valid: false
             }
         }

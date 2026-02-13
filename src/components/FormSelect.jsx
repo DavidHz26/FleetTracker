@@ -1,24 +1,31 @@
 import { FormControl, Typography, Select, MenuItem, Stack } from "@mui/material";
 
-export default function FormSelect({ label, value, onChange, options }) {
+export default function FormSelect({ id, label, value, onChange, options, ...props }) {
   
-    const optionValues = Object.values(options);
+    const optionValues = Array.isArray(options) ? options : Object.values(options);
 
     return (
-        <Stack spacing={1}>
-            <FormControl
-                sx={{
-                    width:180,
-                    flexShrink: 0,
-                }}
-            >
-                <Typography sx={{ color: "black" }}>
-                    {label}
-                </Typography>
+        <Stack
+            spacing={1}
+            width={"100%"}
+        >
+            <Typography
+                component="label"
+                id={`${id}-label`}
+                htmlFor={id}
+                sx={{ color: "text.primary" }}>
+                {label}
+            </Typography>
 
+            <FormControl
+                fullWidth
+            >
                 <Select
+                    id={id}
+                    labelId={`${id}-label`}
                     value={value}
                     onChange={e => onChange(e.target.value)}
+                    {...props}
                     sx={{
                         "& .MuiSelect-select": {
                             overflow: "hidden",
