@@ -1,3 +1,14 @@
+export const AUTH_QUERY_KEY = {
+    vehicles: ["vehicles"],
+}
+
+export const FILTER_OPTIONS = {
+    ALL: "All",
+    AVAILABLE: "Available",
+    UNAVAILABLE: "Unavailable",
+    REPAIR: "Repair",
+}
+
 export const VEHICLE_STATUS = {
     AVAILABLE: "Available",
     UNAVAILABLE: "Unavailable",

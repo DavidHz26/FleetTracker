@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Vehicles from "./pages/Vehicles";
 import AddVehicle from "./pages/AddVehicle";
 import VehicleDetails from "./pages/VehicleDetails";
@@ -6,9 +7,12 @@ import EditVehicle from "./pages/EditVehicle";
 
 import { MessagesProvider } from "./context/MessagesContext";
 
+const queryClient = new QueryClient();
+
 function App() {
 
     return (
+        <QueryClientProvider client={queryClient}>
         <MessagesProvider>
             <Router>
                 <Routes>
@@ -19,6 +23,7 @@ function App() {
                 </Routes>
             </Router>
         </MessagesProvider>
+        </QueryClientProvider>
     )
 };
 

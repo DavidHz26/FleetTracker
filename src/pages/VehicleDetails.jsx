@@ -1,54 +1,38 @@
 import { Box, Stack, Typography, Button } from "@mui/material";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import HomeButton  from "../components/HomeButton"
 import ModalContainer from "../components/ModalContainer";
 import { useMessages } from "../context/MessagesContext";
+import { useGetVehicle } from "../hooks/useGetVehicle";
+import { useDeleteVehicle } from "../hooks/useDeleteVehicle";
+import { LoadingMessage } from "../components/LoadingMessage";
 
 export default function VehicleDetails () {
-
     const {id} = useParams();
-    const [vehicle, setVehicle] = useState(null);
     const navigate = useNavigate();
     const { showMessage } = useMessages();
 
-    const fetchVehicleData = () => {
-        axios
-        .get(`http://localhost:3001/vehicles/${id}`)
-        .then(res =>    {
-            setVehicle(res.data);
-            showMessage("Data successfully retrieved!", "success");
-        })
-        .catch(err => {
-            console.error(err);
-            showMessage("Failed to get vehicle data!");
-        });
-    }
+    const { data: vehicle, isLoading } = useGetVehicle(id);
 
-    useEffect(() => {
-        fetchVehicleData()
-    }, [id]);
-
-    if(!vehicle) {
-        return (
-            <></>
-        )
-    }
-
-    const handleEditVehicle = () => {
-        navigate(`/vehicles/${id}/edit`);
-    }
+    const { mutate: deleteMutation, isPending: isDeleting } = useDeleteVehicle();
 
     const handleDelete = () => {
-        axios
-        .delete(`http://localhost:3001/vehicles/${id}`)
-        .then(() => navigate("/"))
-        .catch(err => {
-            console.error(err);
-            showMessage("Failed to delete vehicle!")
-        });
+        if (window.confirm("Are you sure you want to delete this vehicle?")) {
+            deleteMutation(id, {
+                onSuccess: () => {
+                    showMessage("Vehicle deleted successfully!", "success");
+                    navigate("/");
+                },
+                onError: (error) => {
+                    showMessage("Failed to delete vehicle!");
+                    console.error("Delete vehicle error:", error);
+                }
+            });
+        };
+    }
+
+    if(isLoading || !vehicle){
+        return <LoadingMessage/>;
     }
 
     return (
@@ -62,31 +46,31 @@ export default function VehicleDetails () {
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    Plate: {vehicle.plate}
+                    <strong>Plate:</strong> {vehicle.plate}
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    Year: {vehicle.year}
+                    <strong>Year:</strong> {vehicle.year}
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    Status: {vehicle.status}
+                    <strong>Status:</strong> {vehicle.status}
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    Last Service Date: {vehicle.lastServiceDate}
+                    <strong>Last Service Date:</strong> {vehicle.lastServiceDate}
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    Kilometer: {vehicle.kilometer}
+                    <strong>Kilometer:</strong> {vehicle.kilometer}
                 </Typography>
 
                 <Typography sx={{ color: "black" }}>
-                    GPS Status: {vehicle.gpsStatus}
+                    <strong>GPS Status:</strong> {vehicle.gpsStatus}
                 </Typography>
                 
                 <Typography sx={{ color: "black" }}>
-                    Location: {vehicle.location}
+                    <strong>Location:</strong> {vehicle.location}
                 </Typography>
 
                 <Box
@@ -99,7 +83,8 @@ export default function VehicleDetails () {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleEditVehicle}
+                        component={Link}
+                        to={`/vehicles/${id}/edit`}
                     >
                         Edit
                     </Button>
@@ -108,8 +93,9 @@ export default function VehicleDetails () {
                         variant="contained"
                         color="error"
                         onClick={handleDelete}
+                        disabled={isDeleting}
                     >
-                        Delete
+                        {isDeleting ? "Deleting..." : "Delete"}
                     </Button>
                 </Box>
             </Stack>

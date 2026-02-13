@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { Snackbar, Alert } from "@mui/material";
 
 const MessagesContext = createContext(null);
@@ -11,21 +11,20 @@ export function MessagesProvider ({ children }) {
         severity: "success"
     });
 
-    const showMessage = (message, severity = "error") => {
+    const showMessage = useCallback((message, severity = "error") => {
         setSnackbar({
             open: true,
             message,
             severity
         });
-    };
+    }, []);
 
-    
-    const handleClose = (_, reason) => {
+    const handleClose = useCallback((_, reason) => {
         if (reason === "clickaway"){
             return;
         }
         setSnackbar(prev => ({ ...prev, open: false }));
-    }
+    }, []);
 
 
     return (
@@ -44,6 +43,11 @@ export function MessagesProvider ({ children }) {
                 <Alert
                     onClose={handleClose}
                     severity={snackbar.severity}
+                    variant="filled"
+                    sx={{
+                        width: "100%",
+                        boxShadow: 3
+                    }}
                 >
                     {snackbar.message}
                 </Alert>
@@ -55,7 +59,7 @@ export function MessagesProvider ({ children }) {
 export function useMessages() {
     const context = useContext(MessagesContext);
     if(!context){
-        console.error("useMessages must be used inside MessagesProvider");
+       throw new Error("useMessages must be used inside MessagesProvider");
     }
     return context;
 }

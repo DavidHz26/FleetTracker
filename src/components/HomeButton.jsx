@@ -1,24 +1,25 @@
 import { Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function HomeButton() {
+export default function HomeButton({ to = "/", text = "Back to Home", ...props }) {
   
-    const navigate = useNavigate();
-
     return (
         <Box
             sx={{
-                position: "absolute",
-                top: 12,
-                right: 12
+                position: "fixed",
+                top: 20,
+                right: 20,
+                zIndex: 9999
             }}
         >
             <Button
                 variant="outlined"
                 color="primary"
-                onClick={() => navigate("/")}
+                component={Link}
+                to={to}
+                {...props}
             >
-                Back to Home
+                {text}
             </Button>
         </Box>
     );
