@@ -6,11 +6,13 @@ Users can view, filter, paginate, create, edit and delete vehicles using a mock 
 
 ## Features
 
-- **CRUD Operations**: Create, Read, Update, and Delete vehicles
-- **Pagination & Filtering**: Server-side pagination and real-time filtering
-- **Responsive Design**: Card-based grid layout optimized for all screen sizes
-- **Real-time Feedback**: Snackbar notifications for user actions
-- **Mock API**: Full REST API simulation with json-server
+- **CRUD Management**: Seamlessly create, read, update, and delete vehicle records with real-time UI synchronization.
+- **Smart Data Fetching**: Powered by TanStack Query for efficient server-state management, including intelligent caching and automatic background updates.
+- **Pagination & Filtering**: High-performance server-side pagination and real-time filtering with search debouncing to minimize API load.
+- **Optimized Navigation**: Integrated prefetching for paginated lists, ensuring near-instant page transitions and a smooth user experience.
+- **Responsive & Accessible UI**: A card-based grid layout built with Material UI, fully optimized for mobile, tablet, and desktop screens with a focus on web accessibility (A11y).
+- **Interactive Feedback**: Robust user notification system using Snapbars/Snackbars to provide immediate confirmation on all critical actions.
+- **Mock REST API**: A fully functional backend simulation with json-server, supporting real network requests and persistent data during the session.
 
 ## How to run the project
 
@@ -32,26 +34,19 @@ cd <PROJECT_FOLDER>
 npm install
 ```
 
-3. **Start the mock API (json-server)**
-# Install json-server globally if needed
+3. **Run the mock API (json-server)**
 ```
-npm install -g json-server
+npm run serve-json
 ```
-
-# Run the mock API
-```
-json-server --watch db.json --port 3001
-```
-
-# API will be available at: 
+API will be available at: 
 
 http://localhost:3001
 
-4. Start the React development server
+4. **Start the React development server**
 ```
 npm run dev
 ```
-# App will be open at: 
+App will be open at: 
 
 http://localhost:5173
 
@@ -59,22 +54,23 @@ http://localhost:5173
 
 ### Development Setup
 
-1. **React 19 + Vite** - Choosen for fast setup, excellent developer experience with hot-reload, and optimal build performance, allowing focus on application logic rather than configuration.
+1. **React 19 + Vite** - Chosen for fast setup, excellent developer experience with hot-reload, and optimal build performance, allowing focus on application logic rather than configuration.
 
 ### UI & Styling   
-2. **Material UI (MUI)** -  Accelerated development with pre-built, accessible components while ensuring visual consistency and responsive design without extensive custom CSS.
+2. **Material UI (MUI) & Accessibility** - Chosen to ensure a consistent, accessible (A11y), and responsive design. Used semantic HTML elements and MUI's built-in ARIA support to provide a better experience for screen readers and keyboard navigation.
 
 ### Project Structure
-3. **Modular Architecture** - Organized into `Pages` (route-level views), `Components` (reusable UI), `Context` (global state), and `Utils` (helpers) for clean separation of concerns and maintainability.
+3. **Modular & Custom Hook Architecture** - Organized into Pages, Components, Context, Utils, and a dedicated Hooks folder. Encapsulating TanStack Query logic into custom hooks (e.g., useGetVehicles, useDeleteVehicle) ensures reusable, testable, and clean code by separating UI from data fetching logic.
 
 ### API Integration
-4. **Axios + JSON-Server** -  Used Axios for clean API calls and JSON-Server to simulate RESTful backend with full CRUD, pagination and filtering capabilities.
-5. **API-Driven Pagination/Filtering** - Implemented using JSON-Server's query parameters (`_page`, `_limit`, `q`) to practice real-world patterns where the frontend requests only needed data, avoiding client-side processing of large data.
+4. **TanStack Query (React Query) & Axios + JSON-Server** - Integrated TanStack Query for asynchronous state management. This setup handles full CRUD operations, server-side pagination, and filtering, providing a realistic production-grade data flow with intelligent caching and automatic background updates.
+5. **Network Optimizations** -
+Debounced Search: Implemented a 500ms delay via custom hooks to prevent API throttling.
+Smart Prefetching: While using TanStack Query optimistic updates was not possible because cache key limitations, opted to use a pre fetching solution to keep a fast navigation.
 
 ### UI/UX Considerations
 6. **Card-Based Grid Layout** - Vehicles displayed in responsive cards for optimal space usage and readability, with 10 items per page to balance information density and scrolling.
-7. **Persistent Navigation** - "Back to Home" button ensures users always have cleaner exit points from forms or details views, improving navigation flow.
+7. **UX Feedback & Loading States** - Integrated LoadingMessage components and disabled UI elements (like buttons) during mutations (e.g., isDeleting) to prevent duplicate actions and keep the user informed.
 
 ### State Management Strategy
-8. **API as Source of Truth** - Vehicle data refetches after CRUD operations to maintain synchronization. Avoided global state (Context/Redux) for lists to prevent inconsistencies with paginated API response, keeping implementation simple and robust.
-9. **Targeted Context Usage** - React Context exclusively manages global UI state (Snackbar notifications/alerts), demonstrating appropriate tool selection for specific problems.
+8. **Targeted Context Usage** - React Context exclusively manages global UI state (Snackbar notifications/alerts), demonstrating appropriate tool selection for specific problems.
