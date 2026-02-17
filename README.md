@@ -34,7 +34,9 @@ npm install
 ```
 
 3. **Environment setup**
-Create a ```.env``` file in the root directory and add your API URL (.env.example as a template)
+```
+Create a .env file in the root directory and add your API URL (.env.example as a template)
+```
 
 4. **Start the React development server**
 ```
