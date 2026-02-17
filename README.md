@@ -1,8 +1,7 @@
 
 # Vehicle Management App
 
-A React application that allows users to manage a list of vehicles.
-Users can view, filter, paginate, create, edit and delete vehicles using a mock REST API.
+A React 19 application for fleet tracking and vehicle lifecycle management. Built with focus on performance, clean architecture and secure configuration.
 
 ## Features
 
@@ -12,7 +11,7 @@ Users can view, filter, paginate, create, edit and delete vehicles using a mock 
 - **Optimized Navigation**: Integrated prefetching for paginated lists, ensuring near-instant page transitions and a smooth user experience.
 - **Responsive & Accessible UI**: A card-based grid layout built with Material UI, fully optimized for mobile, tablet, and desktop screens with a focus on web accessibility (A11y).
 - **Interactive Feedback**: Robust user notification system using Snapbars/Snackbars to provide immediate confirmation on all critical actions.
-- **Mock REST API**: A fully functional backend simulation with json-server, supporting real network requests and persistent data during the session.
+- **External REST API**: Integrated with MockAPI for persistent data storage, simulating a real-world production environment with environment-based configuration.
 
 ## How to run the project
 
@@ -34,43 +33,45 @@ cd <PROJECT_FOLDER>
 npm install
 ```
 
-3. **Run the mock API (json-server)**
-```
-npm run serve-json
-```
-API will be available at: 
-
-http://localhost:3001
+3. **Environment setup**
+Create a ```.env``` file in the root directory and add your API URL (.env.example as a template)
 
 4. **Start the React development server**
 ```
 npm run dev
 ```
-App will be open at: 
-
-http://localhost:5173
+App will be available at: http://localhost:5173
 
 ## Technical Decisions & Architecture
 
 ### Development Setup
 
-1. **React 19 + Vite** - Chosen for fast setup, excellent developer experience with hot-reload, and optimal build performance, allowing focus on application logic rather than configuration.
+1. **React 19 + Vite** - Chosen for it's high-performance development server, hot-reload, and optimal build process, ensuring a modern and scalable foundation.
 
 ### UI & Styling   
-2. **Material UI (MUI) & Accessibility** - Chosen to ensure a consistent, accessible (A11y), and responsive design. Used semantic HTML elements and MUI's built-in ARIA support to provide a better experience for screen readers and keyboard navigation.
+
+2. **Material UI (MUI) & Accessibility** - Selected to ensure a consistent, accessible (A11y), and responsive design. I prioritized semantic HTML elements and MUI's ARIA support to guarantee a better experience for keyboard and screen-readers users.
 
 ### Project Structure
-3. **Modular & Custom Hook Architecture** - Organized into Pages, Components, Context, Utils, and a dedicated Hooks folder. Encapsulating TanStack Query logic into custom hooks (e.g., useGetVehicles, useDeleteVehicle) ensures reusable, testable, and clean code by separating UI from data fetching logic.
 
-### API Integration
-4. **TanStack Query (React Query) & Axios + JSON-Server** - Integrated TanStack Query for asynchronous state management. This setup handles full CRUD operations, server-side pagination, and filtering, providing a realistic production-grade data flow with intelligent caching and automatic background updates.
-5. **Network Optimizations** -
-Debounced Search: Implemented a 500ms delay via custom hooks to prevent API throttling.
-Smart Prefetching: While using TanStack Query optimistic updates was not possible because cache key limitations, opted to use a pre fetching solution to keep a fast navigation.
+3. **Modular & Custom Hook Architecture** - Organized into Pages, Components, Hooks and Services. Encapsulating logic into dedicated hooks ensures a clean separation between UI components and data fetching logic.
 
-### UI/UX Considerations
-6. **Card-Based Grid Layout** - Vehicles displayed in responsive cards for optimal space usage and readability, with 10 items per page to balance information density and scrolling.
-7. **UX Feedback & Loading States** - Integrated LoadingMessage components and disabled UI elements (like buttons) during mutations (e.g., isDeleting) to prevent duplicate actions and keep the user informed.
+### Data Management & API Integration
+
+4. **TanStack Query (React Query) & Axios** - Integrated for robust asynchronous state management. This setup handles full CRUD operations, server-side pagination, and complex filtering with intelligent caching and background synchronization.
+
+5. **Secure API Integration** - Used Environment Variable architecture (.env). This protects infrastructure details and follows professional deployment standards.
+
+6. **Backend Simulation** - Selected MockAPI to provide a persistent, cloud-based RESTful API, allowing the application to be fully functional and testable in a production-like environment using Github Pages.
+
+### Performance & UX Optimizations
+
+7. **Network Optimizations** -
+- Debounced Search: Implemented a delay via custom hooks to prevent API throttling.
+- Smart Prefetching: While using TanStack Query optimistic updates was not possible because cache key limitations, opted to use a pre fetching solution to keep a fast navigation.
+
+8. **Interactive Feedback** - Integrated Snackbars and disabled UI states during mutations (e.g., isDeleting) to prevent duplicate actions and provide clear user communication.
 
 ### State Management Strategy
-8. **Targeted Context Usage** - React Context exclusively manages global UI state (Snackbar notifications/alerts), demonstrating appropriate tool selection for specific problems.
+
+9. **Targeted Context Usage** - React Context is used exclusively for global UI notifications (Alerts/Snackbars), demonstrating a mindful approach to state management by choosing the right tool for each specific scope.
