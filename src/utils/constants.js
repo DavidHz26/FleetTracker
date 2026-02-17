@@ -1,4 +1,4 @@
-export const API_BASE_URL = "https://6993ba5cfade7a9ec0f35497.mockapi.io/api/v1";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const VEHICLES_ENDPOINT = `${API_BASE_URL}/vehicles`;
 
