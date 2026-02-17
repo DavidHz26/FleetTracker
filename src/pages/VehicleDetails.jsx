@@ -32,7 +32,7 @@ export default function VehicleDetails () {
     }
 
     if(isLoading || !vehicle){
-        return <LoadingMessage/>;
+        return <LoadingMessage message="Loading vehicle details..."/>
     }
 
     return (

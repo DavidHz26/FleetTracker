@@ -1,3 +1,7 @@
+export const API_BASE_URL = "https://6993ba5cfade7a9ec0f35497.mockapi.io/api/v1";
+
+export const VEHICLES_ENDPOINT = `${API_BASE_URL}/vehicles`;
+
 export const AUTH_QUERY_KEY = {
     vehicles: ["vehicles"],
 }

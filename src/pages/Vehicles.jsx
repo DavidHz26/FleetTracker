@@ -7,6 +7,7 @@ import { FILTER_OPTIONS } from "../utils/constants";
 import { useMessages } from "../context/MessagesContext";
 import { usePrefetchVehicles } from "../hooks/usePrefetchVehicles";
 import { useDebounce } from "../hooks/useDebounce";
+import { LoadingMessage } from "../components/LoadingMessage";
 
 export default function Vehicles() {
     const { showMessage } = useMessages();
@@ -18,7 +19,7 @@ export default function Vehicles() {
 
     const debouncedSearch = useDebounce(searchText, 500);
 
-    const { data, error } = useGetVehicles({
+    const { data, error, isLoading } = useGetVehicles({
         page: currentPage,
         search: debouncedSearch,
         status: statusFilter
@@ -97,33 +98,35 @@ export default function Vehicles() {
                 </Box>
             </Box>
 
-            <Box
-                sx={{
-                    padding: { xs: 2, md: 4 },
-                    display: "flex",
-                    justifyContent: "center",
-                }}
-            >
+            {isLoading ? (
+                <LoadingMessage message="Loading vehicles..."/>
+            ) : (
                 <Box
                     sx={{
-                        width: "100%",
-                        maxWidth: 1200
+                        padding: { xs: 2, md: 4 },
+                        display: "flex",
+                        justifyContent: "center",
                     }}
                 >
-
-                    <VehiclesList
-                        vehicles={vehicles}
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        statusFilter={statusFilter}
-                        setStatusFilter={setStatusFilter}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        totalPages={totalPages}
-                    />
-
+                    <Box
+                        sx={{
+                            width: "100%",
+                            maxWidth: 1200
+                        }}
+                    >
+                        <VehiclesList
+                            vehicles={vehicles}
+                            searchText={searchText}
+                            setSearchText={setSearchText}
+                            statusFilter={statusFilter}
+                            setStatusFilter={setStatusFilter}
+                            currentPage={currentPage}
+                            setCurrentPage={setCurrentPage}
+                            totalPages={totalPages}
+                        />
+                    </Box>
                 </Box>
-            </Box>
+            )}
         </Box>
     )
 }

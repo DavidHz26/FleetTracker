@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { AUTH_QUERY_KEY } from "../utils/constants";
+import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const fetchVehicle = async ({ queryKey }) => {
     const [, id] = queryKey;
-    const response = await axios.get(`http://localhost:3001/vehicles/${id}`);
+    const response = await axios.get(`${VEHICLES_ENDPOINT}/${id}`);
     return response.data;
 }
 

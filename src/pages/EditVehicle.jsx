@@ -68,7 +68,7 @@ export default function EditVehicle() {
     };
 
     if(isLoading || !vehicle){
-        return <LoadingMessage/>;
+        return <LoadingMessage message="Loading vehicle details..."/>
     }
 
     return(

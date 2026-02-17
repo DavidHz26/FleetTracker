@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { AUTH_QUERY_KEY } from "../utils/constants";
+import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const deleteVehicle = async (id) => {
-    const response = await axios.delete(`http://localhost:3001/vehicles/${id}`);
+    const response = await axios.delete(`${VEHICLES_ENDPOINT}/${id}`);
     return response.data;
 }
 

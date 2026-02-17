@@ -1,33 +1,41 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { AUTH_QUERY_KEY, FILTER_OPTIONS } from "../utils/constants";
+import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY, FILTER_OPTIONS } from "../utils/constants";
 
 export const fetchVehicles = async ({ queryKey }) => {
     const { page = 1, limit = 10, search = "", status = FILTER_OPTIONS.ALL } = queryKey[1] || {};
 
-    const params = new URLSearchParams({
-        _page: page,
-        _limit: limit,
-    })
-
-    if (search) {
-        params.append('q', search);
+    const filterParams = new URLSearchParams();
+    if(search)  {
+        filterParams.append('search', search);
     }
 
     if (status && status !== FILTER_OPTIONS.ALL) {
-        params.append('status', status);
+        filterParams.append('status', status);
     }
+   
+    const paginationParams = new URLSearchParams(filterParams);
+    paginationParams.append('page', page);
+    paginationParams.append('limit', limit);
 
-    const response = await axios.get(`http://localhost:3001/vehicles?${params.toString()}`);
+    try {
+        const [dataResponse, countResponse] = await Promise.all([
+            axios.get(`${VEHICLES_ENDPOINT}?${paginationParams.toString()}`),
+            axios.get(`${VEHICLES_ENDPOINT}?${filterParams.toString()}`)
+        ]);
 
-    const totalCount = Number(response.headers["x-total-count"]) || 0;
+        const totalCount = countResponse.data.length || 0;
 
-    return {
-        vehicles: response.data,
-        totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: page,
-    }
+        return {
+            vehicles: dataResponse.data,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page,
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    } 
 }
 
 export const useGetVehicles = ({ page = 1, limit = 10, search = "", status = FILTER_OPTIONS.ALL }) => {
