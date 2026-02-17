@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { AUTH_QUERY_KEY } from "../utils/constants";
+import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const putVehicle = async ({ id, updatedVehicle }) => {
-    const response = await axios.put(`http://localhost:3001/vehicles/${id}`, updatedVehicle);
+    const response = await axios.put(`${VEHICLES_ENDPOINT}/${id}`, updatedVehicle);
     return response.data;
 }
 

@@ -2,10 +2,11 @@ import { Box, Button, Card, CardContent, Typography, Pagination, Grid } from "@m
 import { Link } from "react-router-dom";
 import VehicleFilter from "./VehicleFilter";
 import { FILTER_OPTIONS } from "../utils/constants";
+import EmptyState from "./EmptyState";
 
 export const VehiclesList = ({ vehicles, searchText, setSearchText, statusFilter, setStatusFilter, currentPage, setCurrentPage, totalPages }) => {
 
-    const handlePageChange = (event, page) => {
+    const handlePageChange = (_,page) => {
         setCurrentPage(page);
     }
 
@@ -43,7 +44,7 @@ export const VehiclesList = ({ vehicles, searchText, setSearchText, statusFilter
                                 sm: '50%',
                                 md: '18%'
                             },
-                            display: "flex"
+                            display: "flex",
                         }}
                     >
                         <Card 
@@ -88,11 +89,7 @@ export const VehiclesList = ({ vehicles, searchText, setSearchText, statusFilter
                     </Grid>
                 ))
             ) : (
-                <Grid item xs={12}>
-                    <Typography align="center" sx={{ mt: 4, color: "text.secondary" }}>
-                        No vehicles found matching your search.
-                    </Typography>
-                </Grid>
+                <EmptyState message="No vehicles found matching your search." />
             )}
             </Grid>
 
