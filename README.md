@@ -77,3 +77,7 @@ App will be available at: http://localhost:5173
 ### State Management Strategy
 
 9. **Targeted Context Usage** - React Context is used exclusively for global UI notifications (Alerts/Snackbars), demonstrating a mindful approach to state management by choosing the right tool for each specific scope.
+
+### Quality Assurance & Automated Testing
+
+10. **Vitest & React Testing Library** - Implemented a comprehensive suite of unit tests focusing on component reliability and user behavior, prioritizing testing success, loading, and error states (including server-side failures) to ensure the UI remains resilient and provides clear feedback under any network condition.
