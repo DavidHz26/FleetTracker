@@ -8,6 +8,7 @@ import { useMessages } from "../context/MessagesContext";
 import { usePrefetchVehicles } from "../hooks/usePrefetchVehicles";
 import { useDebounce } from "../hooks/useDebounce";
 import { LoadingMessage } from "../components/LoadingMessage";
+import { ServerErrorMessage } from "../components/ServerErrorMessage";
 
 export default function Vehicles() {
     const { showMessage } = useMessages();
@@ -19,7 +20,7 @@ export default function Vehicles() {
 
     const debouncedSearch = useDebounce(searchText, 500);
 
-    const { data, error, isLoading } = useGetVehicles({
+    const { data, error, isLoading, refetch } = useGetVehicles({
         page: currentPage,
         search: debouncedSearch,
         status: statusFilter
@@ -39,10 +40,12 @@ export default function Vehicles() {
     }, [data, currentPage, debouncedSearch, statusFilter, prefetchNextPage]);
 
     useEffect(() => {
-        if (error) {
-            console.error(error);
-            showMessage("Failed to retrieve vehicles data!");
+        if (!error) {
+            return;
         }
+
+        console.error(error);
+        showMessage("Failed to retrieve vehicles data!");
     }, [error, showMessage]);
 
     useEffect(() => {
@@ -100,6 +103,8 @@ export default function Vehicles() {
 
             {isLoading ? (
                 <LoadingMessage message="Loading vehicles..."/>
+            ) : error ? (
+                <ServerErrorMessage onRetry={refetch}/>
             ) : (
                 <Box
                     sx={{

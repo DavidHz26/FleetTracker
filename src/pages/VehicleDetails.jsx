@@ -1,4 +1,5 @@
 import { Box, Stack, Typography, Button } from "@mui/material";
+import { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import HomeButton  from "../components/HomeButton"
 import ModalContainer from "../components/ModalContainer";
@@ -6,15 +7,25 @@ import { useMessages } from "../context/MessagesContext";
 import { useGetVehicle } from "../hooks/useGetVehicle";
 import { useDeleteVehicle } from "../hooks/useDeleteVehicle";
 import { LoadingMessage } from "../components/LoadingMessage";
+import { ServerErrorMessage } from "../components/ServerErrorMessage";
 
 export default function VehicleDetails () {
     const {id} = useParams();
     const navigate = useNavigate();
     const { showMessage } = useMessages();
 
-    const { data: vehicle, isLoading } = useGetVehicle(id);
+    const { data: vehicle, isLoading, error, refetch } = useGetVehicle(id);
 
     const { mutate: deleteMutation, isPending: isDeleting } = useDeleteVehicle();
+
+    useEffect(() => {
+        if (!error) {
+            return;
+        }
+
+        console.error(error);
+        showMessage("Failed to load vehicle data!");
+    }, [error, showMessage]);
 
     const handleDelete = () => {
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
@@ -31,8 +42,18 @@ export default function VehicleDetails () {
         };
     }
 
-    if(isLoading || !vehicle){
+    if(isLoading){
         return <LoadingMessage message="Loading vehicle details..."/>
+    }
+
+    if(error){
+        return (
+            <ServerErrorMessage 
+                title="Error Loading Vehicle"
+                message="We couldn't retrieve the information for this vehicle."
+                onRetry={refetch}
+            />
+        );
     }
 
     return (
