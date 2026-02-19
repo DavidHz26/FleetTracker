@@ -27,6 +27,10 @@ export default function AddVehicle() {
     });
 
     const submit = () => {
+        if(addMutation.isPending){
+            return;
+        }
+
         const result = validateVehicle(vehicle);
         if(!result.valid){
             showMessage(result.message);

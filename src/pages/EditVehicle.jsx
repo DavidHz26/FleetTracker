@@ -9,6 +9,7 @@ import { useEditVehicle } from "../hooks/useEditVehicle";
 import { useGetVehicle } from "../hooks/useGetVehicle";
 import { LoadingMessage } from "../components/LoadingMessage";
 import VehicleFormFields from "../components/VehicleFormFields";
+import { ServerErrorMessage } from "../components/ServerErrorMessage";
 
 export default function EditVehicle() {
     
@@ -16,29 +17,36 @@ export default function EditVehicle() {
     const navigate = useNavigate();
     const { showMessage } = useMessages();
     const editMutation = useEditVehicle();
-    const { data, isLoading, error } = useGetVehicle(id);
+    const { data, isLoading, error, refetch } = useGetVehicle(id);
 
     const [vehicle, setVehicle] = useState(null);
 
     useEffect(() => {
-        if (data && !vehicle) {
-
-            setVehicle({
-                ...data,
-                year: data.year ? String(data.year) : "",
-                kilometer: data.kilometer ? String(data.kilometer) : ""
-            });
+        if (!data) {
+            return;
         }
-    }, [data, vehicle]);
+
+        setVehicle({
+            ...data,
+            year: data.year ? String(data.year) : "",
+            kilometer: data.kilometer ? String(data.kilometer) : ""
+        });
+    }, [data]);
 
     useEffect(() => {
-        if (error) {
-            console.error(error);
-            showMessage("Failed to load vehicle data!");
+        if (!error) {
+            return;
         }
+
+        console.error(error);
+        showMessage("Failed to load vehicle data!");
     }, [error, showMessage]);
 
     const submit = () => {
+        if(editMutation.isPending){
+            return;
+        }
+
         const result = validateVehicle(vehicle);
         if(!result.valid){
             showMessage(result.message);
@@ -66,6 +74,16 @@ export default function EditVehicle() {
     const handleChange = (field, value) => {
         setVehicle(prev => ({...prev, [field]: value}));
     };
+
+    if (error) {
+        return (
+            <ServerErrorMessage 
+                title="Error Loading Vehicle"
+                message="We couldn't retrieve the information for this vehicle."
+                onRetry={refetch}
+            />
+        );
+    }
 
     if(isLoading || !vehicle){
         return <LoadingMessage message="Loading vehicle details..."/>
@@ -96,7 +114,7 @@ export default function EditVehicle() {
                         onClick={submit}
                         disabled={editMutation.isPending}
                     >
-                        {editMutation.isPending ? "Saving..." : "Edit"}
+                        {editMutation.isPending ? "Saving..." : "Save"}
                     </Button>
 
                     <Button
