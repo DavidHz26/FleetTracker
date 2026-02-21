@@ -1,7 +1,6 @@
-import ModalContainer from "./ModalContainer";
+import CenteredLayout from "./CenteredLayout";
 import { Typography, Box, Button } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HomeButton from "./HomeButton";
 
 export const ServerErrorMessage = ({ 
     title = "Connection Error", 
@@ -9,8 +8,10 @@ export const ServerErrorMessage = ({
     onRetry = null 
 }) => {
     return (
-        <ModalContainer>
-            <Box 
+        <CenteredLayout>
+            <Box
+                role="alert"
+                aria-live="assertive"
                 sx={{ 
                     display: 'flex', 
                     flexDirection: 'column',
@@ -18,21 +19,23 @@ export const ServerErrorMessage = ({
                     justifyContent: 'center',
                     gap: 2,
                     textAlign: 'center',
-                    p: 3
+                    p: 4
                 }}
             >
-                <ErrorOutlineIcon 
+                <ErrorOutlineIcon
+                    aria-hidden="true"
                     sx={{ 
                         fontSize: 80, 
-                        color: 'error.main',
+                        color: 'error.light',
                         mb: 1
                     }} 
                 />
                 
                 <Typography 
-                    variant="h5" 
+                    variant="h5"
+                    component="h2"
                     sx={{ 
-                        color: 'text.primary',
+                        color: 'error.main',
                         fontWeight: 'bold'
                     }}
                 >
@@ -40,11 +43,12 @@ export const ServerErrorMessage = ({
                 </Typography>
                 
                 <Typography 
-                    variant="body1" 
+                    variant="body1"
+                    component="p"
                     sx={{ 
                         color: 'text.secondary',
-                        maxWidth: 300,
-                        mb: 2
+                        maxWidth: 320,
+                        mb: 1.6
                     }}
                 >
                     {message}
@@ -52,16 +56,24 @@ export const ServerErrorMessage = ({
 
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     {onRetry && (
-                        <Button 
-                            variant="contained" 
+                        <Button
+                            aria-label="Retry connection"
+                            variant="contained"
+                            color="primary"
                             onClick={onRetry}
-                            sx={{ px: 4 }}
+                            sx={{ 
+                                mt: 2,
+                                px: 6,
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontWeight: 'bold'
+                            }}
                         >
                             Retry
                         </Button>
                     )}
                 </Box>
             </Box>
-        </ModalContainer>
+        </CenteredLayout>
     );
 };

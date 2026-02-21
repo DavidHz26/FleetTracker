@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import EditVehicle from "./EditVehicle";
 import { useEditVehicle } from "../hooks/useEditVehicle";
 import { useGetVehicle } from "../hooks/useGetVehicle";
@@ -87,8 +87,6 @@ describe("EditVehicle Component", () => {
 
             renderComponent();
 
-            expect(mockShowMessage).toHaveBeenCalledWith("Failed to load vehicle data!");
-
             expect(screen.getByText(/Error Loading Vehicle/i)).toBeInTheDocument();
             expect(screen.getByText(/We couldn't retrieve the information/i)).toBeInTheDocument();
             
@@ -109,18 +107,6 @@ describe("EditVehicle Component", () => {
             expect(await screen.findByDisplayValue("Toyota")).toBeInTheDocument();
             expect(await screen.findByDisplayValue("Corolla")).toBeInTheDocument();
             expect(await screen.findByDisplayValue("2022")).toBeInTheDocument();
-        });
-
-        it("should show error message if data loading fails", () => {
-            useGetVehicle.mockReturnValue({
-                data: null,
-                isLoading: false,
-                error: new Error("Fetch failed")
-            });
-
-            renderComponent();
-
-            expect(mockShowMessage).toHaveBeenCalledWith("Failed to load vehicle data!");
         });
     });
 

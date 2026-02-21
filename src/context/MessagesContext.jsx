@@ -4,7 +4,6 @@ import { Snackbar, Alert } from "@mui/material";
 const MessagesContext = createContext(null);
 
 export function MessagesProvider ({ children }) {
-
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -12,11 +11,15 @@ export function MessagesProvider ({ children }) {
     });
 
     const showMessage = useCallback((message, severity = "error") => {
-        setSnackbar({
-            open: true,
-            message,
-            severity
-        });
+        setSnackbar(prev => ({ ...prev, open: false }));
+
+        setTimeout(() => {
+            setSnackbar({
+                open: true,
+                message,
+                severity
+            });
+        }, 150);
     }, []);
 
     const handleClose = useCallback((_, reason) => {
@@ -33,7 +36,7 @@ export function MessagesProvider ({ children }) {
 
             <Snackbar
                 open={snackbar.open}
-                autoHideDuration={3000}
+                autoHideDuration={5000}
                 onClose={handleClose}
                 anchorOrigin={{
                     vertical: "top",
@@ -44,9 +47,11 @@ export function MessagesProvider ({ children }) {
                     onClose={handleClose}
                     severity={snackbar.severity}
                     variant="filled"
+                    role="alert"
+                    elevation={6}
                     sx={{
                         width: "100%",
-                        boxShadow: 3
+                        borderRadius: 2
                     }}
                 >
                     {snackbar.message}

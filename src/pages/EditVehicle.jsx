@@ -1,8 +1,7 @@
 import { Box, Stack, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import ModalContainer from "../components/ModalContainer";
-import HomeButton from "../components/HomeButton";
+import CenteredLayout from "../components/CenteredLayout";
 import { validateVehicle } from "../utils/validation";
 import { useMessages } from "../context/MessagesContext";
 import { useEditVehicle } from "../hooks/useEditVehicle";
@@ -12,7 +11,6 @@ import VehicleFormFields from "../components/VehicleFormFields";
 import { ServerErrorMessage } from "../components/ServerErrorMessage";
 
 export default function EditVehicle() {
-    
     const {id} = useParams();
     const navigate = useNavigate();
     const { showMessage } = useMessages();
@@ -33,15 +31,6 @@ export default function EditVehicle() {
         });
     }, [data]);
 
-    useEffect(() => {
-        if (!error) {
-            return;
-        }
-
-        console.error(error);
-        showMessage("Failed to load vehicle data!");
-    }, [error, showMessage]);
-
     const submit = () => {
         if(editMutation.isPending){
             return;
@@ -56,7 +45,8 @@ export default function EditVehicle() {
         const updatedVehicle = {
             ...vehicle,
             year: Number(vehicle.year),
-            kilometer: Number(vehicle.kilometer)
+            kilometer: Number(vehicle.kilometer),
+            plate: vehicle.plate.trim().toUpperCase(),
         };
 
         editMutation.mutate({ id, updatedVehicle }, {
@@ -90,10 +80,18 @@ export default function EditVehicle() {
     }
 
     return(
-        <ModalContainer>
-            <Stack spacing={2}>
+        <CenteredLayout showHomeButton={true}>
+            <Stack
+                spacing={3}
+                component="form"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    submit();
+                }}
+            >
                 <Typography
                     variant="h4"
+                    component="h1"
                     sx={{ color: "black" }}
                 >
                     Edit Vehicle
@@ -108,28 +106,28 @@ export default function EditVehicle() {
                         gap: 2
                     }}
                 >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={submit}
-                        disabled={editMutation.isPending}
-                    >
-                        {editMutation.isPending ? "Saving..." : "Save"}
-                    </Button>
-
-                    <Button
+                     <Button
                         variant="contained"
                         color="error"
                         component={Link}
                         to={`/vehicles/${id}`}
                         disabled={editMutation.isPending}
+                        aria-label="Cancel editing and return to vehicle details"
                     >
                         Cancel
                     </Button>
+                    
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={editMutation.isPending}
+                        aria-busy={editMutation.isPending}
+                    >
+                        {editMutation.isPending ? "Saving..." : "Save"}
+                    </Button>
                 </Box>
-
-                <HomeButton/>
             </Stack>
-        </ModalContainer>
+        </CenteredLayout>
     )
 }

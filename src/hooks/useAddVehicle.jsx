@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { supabaseAxios } from "../api/supabaseClient";
 import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const postVehicle = async (newVehicle) => {
-    const response = await axios.post(VEHICLES_ENDPOINT, newVehicle);
+    const response = await supabaseAxios.post(VEHICLES_ENDPOINT, newVehicle);
     return response.data;
 }
 

@@ -1,10 +1,13 @@
-import ModalContainer from "./ModalContainer";
+import CenteredLayout from "./CenteredLayout";
 import { Typography, CircularProgress, Box } from "@mui/material";
 
 export const LoadingMessage = ({ message = "Loading..." }) => {
     return (
-        <ModalContainer>
+        <CenteredLayout>
             <Box 
+                role="alert"
+                aria-busy="true"
+                aria-live="polite"
                 sx={{ 
                     display: 'flex', 
                     flexDirection: 'column',
@@ -18,11 +21,13 @@ export const LoadingMessage = ({ message = "Loading..." }) => {
                 <CircularProgress 
                     size={60} 
                     thickness={4.5} 
-                    sx={{ color: 'primary.main' }} 
+                    sx={{ color: 'primary.main' }}
+                    aria-hidden="true"
                 />
                 
                 <Typography 
-                    variant="body1" 
+                    variant="body1"
+                    component="p"
                     sx={{ 
                         color: 'text.secondary',
                         fontWeight: 'medium',
@@ -32,6 +37,6 @@ export const LoadingMessage = ({ message = "Loading..." }) => {
                     {message}
                 </Typography>
             </Box>
-        </ModalContainer>
+        </CenteredLayout>
     );
 };

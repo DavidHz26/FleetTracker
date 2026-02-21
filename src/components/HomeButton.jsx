@@ -2,14 +2,16 @@ import { Box, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export default function HomeButton({ to = "/", text = "Back to Home", ...props }) {
-  
     return (
         <Box
+            component="nav"
+            aria-label="Home navigation"
             sx={{
-                position: "fixed",
-                top: 20,
-                right: 20,
-                zIndex: 9999
+                display: "flex",
+                justifyContent: "flex-end",
+                width: "100%",
+                maxWidth: "600px",
+                mb: 2,
             }}
         >
             <Button

@@ -1,18 +1,28 @@
 import { Box } from "@mui/material";
+import HomeButton from "./HomeButton";
 
-export default function ModalContainer({ children }) {
+export default function CenteredLayout({ children, showHomeButton = false }) {
   return (
     <Box
+        component="main"
         sx={{
             minHeight: "100vh",
-            width: "100vw",
+            width: "100%",
             display: "flex",
+            flexDirection:"column",
             justifyContent: "center",
             alignItems: "center",
             padding: 2,
+            position: "fixed",
+            top: 0,
         }}
     >
+        {showHomeButton && (
+            <HomeButton/>
+        )}
+    
         <Box
+            component="section"
             sx={{
                 width: "100%",
                 maxWidth: "600px",
@@ -21,7 +31,7 @@ export default function ModalContainer({ children }) {
                 borderRadius: 2,
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", // Sombra suave para que parezca una tarjeta
+                boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
             }}
         >
             <Box

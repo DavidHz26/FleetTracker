@@ -1,9 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { supabaseAxios } from "../api/supabaseClient";
 import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const deleteVehicle = async (id) => {
-    const response = await axios.delete(`${VEHICLES_ENDPOINT}/${id}`);
+    const response = await supabaseAxios.delete(VEHICLES_ENDPOINT, {
+        params: {
+            id: `eq.${id}`
+        }
+    })
     return response.data;
 }
 

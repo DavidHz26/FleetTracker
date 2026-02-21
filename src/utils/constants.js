@@ -1,6 +1,4 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-export const VEHICLES_ENDPOINT = `${API_BASE_URL}/vehicles`;
+export const VEHICLES_ENDPOINT = String(import.meta.env.VITE_VEHICLES_ENDPOINT);
 
 export const AUTH_QUERY_KEY = {
     vehicles: ["vehicles"],
