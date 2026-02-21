@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import VehicleDetails from "./VehicleDetails";
 import { useGetVehicle } from "../hooks/useGetVehicle";
@@ -76,11 +76,8 @@ describe("VehicleDetails Component", () => {
 
             renderComponent();
 
-            expect(mockShowMessage).toHaveBeenCalledWith("Failed to load vehicle data!");
-
             expect(screen.getByText(/Error Loading Vehicle/i)).toBeInTheDocument();
             expect(screen.getByText(/We couldn't retrieve the information/i)).toBeInTheDocument();
-            
             expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
         });
 
@@ -100,21 +97,9 @@ describe("VehicleDetails Component", () => {
 
             renderComponent();
 
-            const deleteButton = screen.getByRole("button", { name: /deleting/i });
+            const deleteButton = screen.getByLabelText(/Delete vehicle VAL-123/i);
             expect(deleteButton).toBeDisabled();
-        });
-
-        it("should show error message if data loading fails", async () => {
-            useGetVehicle.mockReturnValue({
-                data: null,
-                isLoading: false,
-                error: new Error("Fetch failed")
-            });
-
-            renderComponent();
-            await waitFor(() => {
-                expect(mockShowMessage).toHaveBeenCalledWith("Failed to load vehicle data!");
-            });
+            expect(deleteButton).toHaveTextContent(/Deleting.../i);
         });
     });
 
@@ -123,7 +108,7 @@ describe("VehicleDetails Component", () => {
             const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
             renderComponent();
 
-            fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+            fireEvent.click(screen.getByLabelText(/Delete vehicle VAL-123/i));
 
             expect(confirmSpy).toHaveBeenCalled();
             expect(mockMutate).toHaveBeenCalled();
@@ -145,21 +130,27 @@ describe("VehicleDetails Component", () => {
             vi.spyOn(window, "confirm").mockReturnValue(true);
             renderComponent();
 
-            fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+            fireEvent.click(screen.getByLabelText(/Delete vehicle VAL-123/i));
 
             expect(mockShowMessage).toHaveBeenCalledWith("Vehicle deleted successfully!", "success");
-            expect(mockNavigate).toHaveBeenCalledWith("/");
+            expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
         });
 
         it("should show error message when deletion fails", () => {
+            const axiosError = {
+                response: {
+                    data: { message: "Failed to delete vehicle!" }
+                }
+            };
+
             mockMutate.mockImplementation((id, options) => {
-                options.onError();
+                options.onError(axiosError);
             });
 
             vi.spyOn(window, "confirm").mockReturnValue(true);
             renderComponent();
 
-            fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+            fireEvent.click(screen.getByLabelText(/Delete vehicle VAL-123/i));
 
             expect(mockShowMessage).toHaveBeenCalledWith("Failed to delete vehicle!");
             expect(mockNavigate).not.toHaveBeenCalled();

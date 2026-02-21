@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { supabaseAxios } from "../api/supabaseClient";
 import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
 const fetchVehicle = async ({ queryKey }) => {
     const [, id] = queryKey;
-    const response = await axios.get(`${VEHICLES_ENDPOINT}/${id}`);
-    return response.data;
+ 
+    const response = await supabaseAxios.get(VEHICLES_ENDPOINT, {
+        params: {
+            id: `eq.${id}`,
+            select: "*",
+        },
+    });
+    return response.data?.[0] || null;
 }
 
 export const useGetVehicle = (id, options = {}) => {

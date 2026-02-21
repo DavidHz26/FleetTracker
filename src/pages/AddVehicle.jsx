@@ -1,7 +1,6 @@
 import { Stack, Button, Typography } from "@mui/material";
 import { useState } from "react";
-import HomeButton from "../components/HomeButton";
-import ModalContainer from "../components/ModalContainer";
+import CenteredLayout from "../components/CenteredLayout";
 import { validateVehicle } from "../utils/validation";
 import { useMessages } from "../context/MessagesContext";
 import { useAddVehicle } from "../hooks/useAddVehicle";
@@ -9,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import VehicleFormFields from "../components/VehicleFormFields";
 
 export default function AddVehicle() {
-    
     const { showMessage } = useMessages();
     const navigate = useNavigate();
     const addMutation = useAddVehicle();
@@ -40,7 +38,8 @@ export default function AddVehicle() {
         const newVehicle = {
             ...vehicle,
             year: Number(vehicle.year),
-            kilometer: Number(vehicle.kilometer)
+            kilometer: Number(vehicle.kilometer),
+            plate: vehicle.plate.trim().toUpperCase(),
         };
 
         addMutation.mutate(newVehicle, {
@@ -60,10 +59,18 @@ export default function AddVehicle() {
     }
 
     return (
-        <ModalContainer>
-            <Stack spacing={2}>
+        <CenteredLayout showHomeButton={true}>
+            <Stack
+                spacing={3}
+                component="form"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    submit();
+                }}
+            >
                 <Typography
                     variant="h4"
+                    component="h1"
                     sx={{ color: "black" }}
                 >
                     Add New Vehicle
@@ -71,16 +78,15 @@ export default function AddVehicle() {
 
                 <VehicleFormFields vehicle={vehicle} onChange={handleChange}/>
 
-                <Button 
+                <Button
+                    type="submit"
                     variant="contained"
-                    onClick={submit}
                     disabled={addMutation.isPending}
+                    aria-busy={addMutation.isPending}
                 >
                     {addMutation.isPending ? "Creating..." : "Create"}
                 </Button>
             </Stack>
-
-            <HomeButton/>
-        </ModalContainer>
+        </CenteredLayout>
     );
 }

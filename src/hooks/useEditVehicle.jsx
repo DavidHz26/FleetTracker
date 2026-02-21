@@ -1,9 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { supabaseAxios } from "../api/supabaseClient";
 import { VEHICLES_ENDPOINT, AUTH_QUERY_KEY } from "../utils/constants";
 
-const putVehicle = async ({ id, updatedVehicle }) => {
-    const response = await axios.put(`${VEHICLES_ENDPOINT}/${id}`, updatedVehicle);
+const patchVehicle = async ({ id, updatedVehicle }) => {
+    const response = await supabaseAxios.patch(VEHICLES_ENDPOINT, updatedVehicle, {
+        params: {
+            id: `eq.${id}`
+        }
+    });
     return response.data;
 }
 
@@ -11,7 +15,7 @@ export const useEditVehicle = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: putVehicle,
+        mutationFn: patchVehicle,
         onSuccess: (_,{ id }) => {
             queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY.vehicles] });
             queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY.vehicles, id] });

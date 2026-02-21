@@ -1,8 +1,6 @@
 import { Box, Stack, Typography, Button } from "@mui/material";
-import { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import HomeButton  from "../components/HomeButton"
-import ModalContainer from "../components/ModalContainer";
+import CenteredLayout from "../components/CenteredLayout";
 import { useMessages } from "../context/MessagesContext";
 import { useGetVehicle } from "../hooks/useGetVehicle";
 import { useDeleteVehicle } from "../hooks/useDeleteVehicle";
@@ -18,25 +16,16 @@ export default function VehicleDetails () {
 
     const { mutate: deleteMutation, isPending: isDeleting } = useDeleteVehicle();
 
-    useEffect(() => {
-        if (!error) {
-            return;
-        }
-
-        console.error(error);
-        showMessage("Failed to load vehicle data!");
-    }, [error, showMessage]);
-
     const handleDelete = () => {
-        if (window.confirm("Are you sure you want to delete this vehicle?")) {
+        if (window.confirm(`Are you sure you want to delete ${vehicle.brand} ${vehicle.plate}? This action cannot be undone.`)) {
             deleteMutation(id, {
                 onSuccess: () => {
+                    navigate("/", { replace: true });
                     showMessage("Vehicle deleted successfully!", "success");
-                    navigate("/");
                 },
                 onError: (error) => {
-                    showMessage("Failed to delete vehicle!");
-                    console.error("Delete vehicle error:", error);
+                    const errorMessage = error.response?.data?.message || "Failed to delete vehicle!";
+                    showMessage(errorMessage);
                 }
             });
         };
@@ -46,7 +35,7 @@ export default function VehicleDetails () {
         return <LoadingMessage message="Loading vehicle details..."/>
     }
 
-    if(error){
+    if(error || !vehicle){
         return (
             <ServerErrorMessage 
                 title="Error Loading Vehicle"
@@ -57,44 +46,52 @@ export default function VehicleDetails () {
     }
 
     return (
-        <ModalContainer>
-            <Stack spacing={2}>
+        <CenteredLayout showHomeButton={true}>
+            <Stack spacing={2} component="article">
                 <Typography
                     variant="h4"
+                    component="h1"
                     sx={{ color: "black" }}
                 >
                     {vehicle.brand} {vehicle.model}
                 </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>Plate:</strong> {vehicle.plate}
-                </Typography>
+                <Box
+                    component="section"
+                    aria-label="Vehicle information"
+                >
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Plate:</strong> {vehicle.plate}
+                    </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>Year:</strong> {vehicle.year}
-                </Typography>
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Year:</strong> {vehicle.year}
+                    </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>Status:</strong> {vehicle.status}
-                </Typography>
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Status:</strong> {vehicle.status}
+                    </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>Last Service Date:</strong> {vehicle.lastServiceDate}
-                </Typography>
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Last Service Date:</strong> {vehicle.lastServiceDate}
+                    </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>Kilometer:</strong> {vehicle.kilometer}
-                </Typography>
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Kilometer:</strong> {vehicle.kilometer} km
+                    </Typography>
 
-                <Typography sx={{ color: "black" }}>
-                    <strong>GPS Status:</strong> {vehicle.gpsStatus}
-                </Typography>
-                
-                <Typography sx={{ color: "black" }}>
-                    <strong>Location:</strong> {vehicle.location}
-                </Typography>
+                    <Typography sx={{ color: "black" }}>
+                        <strong>GPS Status:</strong> {vehicle.gpsStatus}
+                    </Typography>
+                    
+                    <Typography sx={{ color: "black" }}>
+                        <strong>Location:</strong> {vehicle.location}
+                    </Typography>
+                </Box>
 
                 <Box
+                    component="nav"
+                    aria-label="Vehicle actions"
                     sx={{
                         display: "flex",
                         justifyContent: "center",
@@ -103,26 +100,26 @@ export default function VehicleDetails () {
                 >
                     <Button
                         variant="contained"
-                        color="primary"
-                        component={Link}
-                        to={`/vehicles/${id}/edit`}
+                        color="error"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        aria-busy={isDeleting}
+                        aria-label={`Delete vehicle ${vehicle.plate}`}
                     >
-                        Edit
+                        {isDeleting ? "Deleting..." : "Delete"}
                     </Button>
 
                     <Button
                         variant="contained"
-                        color="error"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
+                        color="primary"
+                        component={Link}
+                        to={`/vehicles/${id}/edit`}
+                        aria-label={`Edit details for vehicle ${vehicle.plate}`}
                     >
-                        {isDeleting ? "Deleting..." : "Delete"}
-                    </Button>
+                        Edit Details
+                    </Button>                    
                 </Box>
             </Stack>
-
-            <HomeButton/>
-     
-        </ModalContainer>
+        </CenteredLayout>
     )
 }
