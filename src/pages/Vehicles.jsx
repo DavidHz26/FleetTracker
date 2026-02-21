@@ -43,16 +43,16 @@ export default function Vehicles() {
     return (
         <Box
             component="main"
-           sx={{
-            minHeight: "100vh",
-            width: "100vw",
-            display: "flex",
-            flexDirection: "column",
-            margin: 0,
-            padding: 0,
-            boxSizing: "border-box",
-            overflowX: "hidden"
-        }}
+            sx={{
+                minHeight: "100vh",
+                width: "100vw",
+                display: "flex",
+                flexDirection: "column",
+                margin: 0,
+                padding: 0,
+                boxSizing: "border-box",
+                overflowX: "hidden"
+            }}
         >
             <Box
                 component="header"
